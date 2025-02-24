@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from models.Profile import Profile
+from models.User import User
 from schemas.profile_schema import ProfileSchema
 from app import db
 
@@ -24,13 +25,25 @@ def get_profile(profile_id: int):
 def add_profile():
     profile_fname = request.form['profile_fname']
     test = Profile.query.filter_by(profile_fname=profile_fname).first()
+
     if test:
         return jsonify(message='There is already a profile by that name', status=409), 409
     else:
         profile_lname = request.form['profile_lname']
         role = request.form['role']
         bio = request.form['bio']
-        profile = Profile(profile_fname=profile_fname, profile_lname=profile_lname, role=role, bio=bio)
+        user_id = request.form.get['user_id']
+
+        if not user_id:
+            return jsonify(message='You must provide a user_id', status=400), 400
+        user = User.query.filter_by(id=user_id).first()
+        if not user:
+            return jsonify(message='That user does not exist', status=404), 404
+        
+        if user.profile:
+            return jsonify(message='That user already has a profile', status=409), 409
+        
+        profile = Profile(profile_fname=profile_fname, profile_lname=profile_lname, role=role, bio=bio, user_id=user_id, user=user)
         db.session.add(profile)
         db.session.commit()
         return jsonify(message='You added a profile', status=201), 201
