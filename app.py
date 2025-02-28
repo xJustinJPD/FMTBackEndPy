@@ -22,14 +22,17 @@ from models.User import User
 # from models.Profile import Profile
 from models.Group import Group
 from models.User_Group import user_group
+from models.Stats import Stats
 
 # Importing models, routes, and controllers after initialization
 from routes.user_routes import user_routes
 # from routes.profile_routes import profile_routes
 # from routes.group_routes import group_routes
+from routes.stats_routes import stats_routes
 
 # Register routes
 app.register_blueprint(user_routes)
+app.register_blueprint(stats_routes)
 # app.register_blueprint(profile_routes)
 # app.register_blueprint(group_routes)
 
