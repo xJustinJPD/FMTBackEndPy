@@ -5,7 +5,7 @@ class Group(db.Model):
     __tablename__ = 'group'
     id = Column(Integer, primary_key=True)
     group_name = Column(String)
-    users = db.relationship('User', secondary='user_group', backref='group')
+    users = db.relationship('User', secondary='user_group', back_populates='groups')
 
     def to_dict(self):
         return {

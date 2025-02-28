@@ -4,20 +4,24 @@ from sqlalchemy import Column, Integer, String, Table, ForeignKey
 class User(db.Model):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True)
     first_name = Column(String)
     last_name = Column(String)
     email = Column(String, unique=True)
     password = Column(String)
-    groups = db.relationship('Group', secondary='user_group' ,backref='user')
-    profile = db.relationship('Profile', back_populates='user', uselist=False, cascade='all, delete-orphan')
+    bio = Column(String)
+    role = Column(String)
+    groups = db.relationship('Group', secondary='user_group' ,back_populates='users')
 
     def to_dict(self):
         return {
             'id': self.id,
+            'username': self.username,
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email': self.email,
             'password': self.password,
-            'groups': [group.to_dict() for group in self.groups],
-            'profile' : self.profile.to_dict()
+            'bio': self.bio,
+            'role': self.role
+            # 'groups': [group.to_dict() for group in self.groups],
         }
