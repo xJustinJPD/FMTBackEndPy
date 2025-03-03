@@ -12,7 +12,7 @@ def get_matches_route():
 def get_match_route():
     return get_match()
 
-@stats_routes.route('/stats', methods=['GET'])
+@stats_routes.route('/stats', methods=['POST'])
 def get_stats_route():
     return get_stats()
 

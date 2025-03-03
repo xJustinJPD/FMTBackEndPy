@@ -12,6 +12,7 @@ class User(db.Model):
     bio = Column(String)
     role = Column(String)
     groups = db.relationship('Group', secondary='user_group' ,back_populates='users')
+    stats = db.relationship('Stats', back_populates='user', uselist=False)
 
     def to_dict(self):
         return {
@@ -22,6 +23,7 @@ class User(db.Model):
             'email': self.email,
             'password': self.password,
             'bio': self.bio,
-            'role': self.role
+            'role': self.role,
             # 'groups': [group.to_dict() for group in self.groups],
+            'stats': self.stats.to_dict()
         }

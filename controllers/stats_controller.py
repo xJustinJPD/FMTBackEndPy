@@ -2,13 +2,14 @@ import requests
 from flask import request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from models.Stats import Stats
+from models.User import User
 from schemas.stats_schema import StatsSchema
 from app import db, app
 
 stats_schema = StatsSchema()
 stats_schema = StatsSchema(many=True)
 
-api_key = 'RGAPI-ed522daf-de38-4dae-af08-e68518faaaff'
+api_key = 'RGAPI-7220703c-2654-4502-ae6d-f89f7fd8a431'
 this_puuid = 'XVOMn2SnoNAokktURdg1V3FeXtSWJLJkZYFZMOjp9S3gDD6F-ypV_FTDdD0oE1HTB9ziRYcOfiznHw'
 matches = []
 match = {}
@@ -49,6 +50,11 @@ def get_match():
 
 
 def get_stats():
+    user_id = request.json.get('user_id')
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
     url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{this_puuid}/ids?start=0&count=20'
 
     response = requests.get(url, headers={'X-Riot-Token': api_key})
@@ -59,6 +65,11 @@ def get_stats():
     matches = response.json()
 
     kills = 0
+    deaths = 0
+    assists = 0
+    wins = 0
+    losses = 0
+    rank = 0
 
     for match_id in matches:
         url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
@@ -72,6 +83,25 @@ def get_stats():
 
         part_index = match['metadata']['participants'].index(this_puuid)
         stats_list = match['info']['participants'][part_index]
-        kills = kills + stats_list['kills']
 
-    return jsonify(kills)
+        kills += stats_list['kills']
+        deaths += stats_list['deaths']
+        assists += stats_list['assists']
+        wins += 1 if stats_list['win'] else 0
+        losses += 0 if stats_list['win'] else 1
+        rank = stats_list['summonerLevel']
+
+    if user.stats:
+        user.stats.kills = kills
+        user.stats.deaths = deaths
+        user.stats.assists = assists
+        user.stats.wins = wins
+        user.stats.losses = losses
+        user.stats.rank = rank
+    else:
+        stats = Stats(kills=kills, deaths=deaths, assists=assists, wins=wins, losses=losses, rank=rank, user=user)
+        db.session.add(stats)
+
+    db.session.commit()
+
+    return jsonify(message = "Stats added successfully"), 201

@@ -75,7 +75,7 @@ def get_user(user_id: int):
 
 def get_users():
     users_list = User.query.all()
-    result = users_schema.dump(users_list)
+    result = [user.to_dict() for user in users_list]
     return jsonify(result)
 
 def update_user(user_id: int):
