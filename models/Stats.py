@@ -1,5 +1,5 @@
 from app import db
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, Table, ForeignKey, Float
 
 class Stats(db.Model):
     __tablename__ = 'stats'
@@ -10,6 +10,10 @@ class Stats(db.Model):
     wins = Column(Integer)
     losses = Column(Integer)
     rank = Column(String)
+    winloss = Column(Float)
+    kda = Column(Float)
+    kapm = Column(Float)
+    winpercent = Column(Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
     user = db.relationship('User', back_populates='stats')
 
@@ -21,4 +25,8 @@ class Stats(db.Model):
             'wins': self.wins,
             'losses': self.losses,
             'rank': self.rank,
+            'winloss': self.winloss,
+            'kda': self.kda,
+            'kapm': self.kapm,
+            'winpercent': self.winpercent
         }

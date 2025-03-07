@@ -9,7 +9,7 @@ from app import db, app
 stats_schema = StatsSchema()
 stats_schema = StatsSchema(many=True)
 
-api_key = 'RGAPI-7220703c-2654-4502-ae6d-f89f7fd8a431'
+api_key = 'RGAPI-16acbfa7-3d4f-4722-9dd4-156e3b669fbe'
 this_puuid = 'XVOMn2SnoNAokktURdg1V3FeXtSWJLJkZYFZMOjp9S3gDD6F-ypV_FTDdD0oE1HTB9ziRYcOfiznHw'
 matches = []
 match = {}
@@ -70,6 +70,10 @@ def get_stats():
     wins = 0
     losses = 0
     rank = 0
+    winloss = 0.0
+    kda = 0.0
+    kapm = 0.0
+    winpercent = 0
 
     for match_id in matches:
         url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
@@ -91,6 +95,11 @@ def get_stats():
         losses += 0 if stats_list['win'] else 1
         rank = stats_list['summonerLevel']
 
+    winloss = wins / losses
+    kda = (kills + assists) / deaths
+    kapm = (kills + assists) / (wins + losses)
+    winpercent = int(wins / (wins + losses) * 100)
+
     if user.stats:
         user.stats.kills = kills
         user.stats.deaths = deaths
@@ -98,8 +107,13 @@ def get_stats():
         user.stats.wins = wins
         user.stats.losses = losses
         user.stats.rank = rank
+        user.stats.winloss = winloss
+        user.stats.kda = kda
+        user.stats.kapm = kapm
+        user.stats.winpercent = winpercent
+
     else:
-        stats = Stats(kills=kills, deaths=deaths, assists=assists, wins=wins, losses=losses, rank=rank, user=user)
+        stats = Stats(kills=kills, deaths=deaths, assists=assists, wins=wins, losses=losses, rank=rank, winloss=winloss, kda=kda, kapm=kapm, winpercent=winpercent  ,user=user)
         db.session.add(stats)
 
     db.session.commit()

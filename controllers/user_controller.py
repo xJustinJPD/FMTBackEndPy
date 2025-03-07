@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from models.User import User
 from models.Group import Group
+from models.Stats import Stats
 from schemas.user_schema import UserSchema
 from app import db
 
@@ -74,7 +75,27 @@ def get_user(user_id: int):
     
 
 def get_users():
-    users_list = User.query.all()
+    data = request.get_json()
+
+    query = User.query
+
+    # Apply filters dynamically
+    if "min_kills" in data:
+        query = query.filter(User.stats.has(Stats.kills >= data["min_kills"]))
+    if "max_kills" in data:
+        query = query.filter(User.stats.has(Stats.kills <= data["max_kills"]))
+    if "min_deaths" in data:
+        query = query.filter(User.stats.has(Stats.deaths >= data["min_deaths"]))
+    if "max_deaths" in data:
+        query = query.filter(User.stats.has(Stats.deaths <= data["max_deaths"]))
+    if "min_level" in data:
+        query = query.filter(User.stats.has(Stats.level >= data["min_level"]))
+    if "max_level" in data:
+        query = query.filter(User.stats.has(Stats.level <= data["max_level"]))
+    if "role" in data:
+        query = query.filter(User.role == data["role"])
+
+    users_list = query.all()
     result = [user.to_dict() for user in users_list]
     return jsonify(result)
 
