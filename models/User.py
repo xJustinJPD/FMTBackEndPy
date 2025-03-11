@@ -11,6 +11,7 @@ class User(db.Model):
     password = Column(String)
     bio = Column(String)
     role = Column(String)
+    discord_id = Column(String ,unique=True ,nullable=True)
     groups = db.relationship('Group', secondary='user_group' ,back_populates='users')
     stats = db.relationship('Stats', back_populates='user', uselist=False)
 
