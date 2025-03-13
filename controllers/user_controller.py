@@ -1,4 +1,6 @@
-from flask import request, jsonify
+from flask import request, jsonify, redirect, session
+import requests
+import os
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from models.User import User
 from models.Group import Group
@@ -123,3 +125,67 @@ def delete_user(user_id: int):
         return jsonify(message='You deleted your profile', status=202), 202
     else:
         return jsonify(message='That profile does not exist', status=404), 404
+    
+
+
+DISCORD_CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
+DISCORD_REDIRECT_URI = os.getenv('DISCORD_REDIRECT_URI')
+DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
+DISCORD_API_BASE_URL = os.getenv('DISCORD_API_BASE_URL')
+
+
+def discord_login():
+    discord_auth_url = f'https://discord.com/api/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&redirect_uri={DISCORD_REDIRECT_URI}&response_type=code&scope=identify'
+    return redirect(discord_auth_url)
+
+
+def discord_callback():
+    code = request.args.get('code')
+    if not code:
+        return jsonify(message='Authorization failed', status=400), 400
+
+    data = {
+        'client_id': DISCORD_CLIENT_ID,
+        'client_secret': DISCORD_CLIENT_SECRET,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': DISCORD_REDIRECT_URI,
+        'scope': 'identify'
+    }
+
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    response = requests.post(f"{DISCORD_API_BASE_URL}/oauth2/token", data=data, headers=headers)
+
+    if response.status_code != 200:
+        return jsonify(message='Authorization failed when retrieving token response', status=400), 400
+    
+    response_data = response.json()
+    access_token = response_data.get('access_token')
+    token_type = response_data.get('token_type')
+
+    headers = {
+        'Authorization': f'{token_type} {access_token}'
+    }
+    user_response = f'{DISCORD_API_BASE_URL}/users/@me'
+
+    if user_response.status_code != 200:
+        return jsonify(message='Authorization failed when retrieving user response', status=400), 400
+    
+
+    user_response = requests.get(user_response, headers=headers)
+    user_data = user_response.json()
+    discord_id = user_data.get('id')
+
+    user = User.query.filter_by(email=session.get("email")).first()
+    
+    if not user:
+        return jsonify(message='User not found', status=404), 404
+
+
+    user.discord_id = discord_id
+    db.session.commit()
+
+    return jsonify(message='Login succeeded!', access_token=access_token)

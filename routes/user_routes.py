@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from controllers.user_controller import register, login, add_user_to_group, get_user, get_users, update_user, delete_user
+from controllers.user_controller import register, login, add_user_to_group, get_user, get_users, update_user, delete_user, discord_login, discord_callback
 from flask_jwt_extended import jwt_required
 
 user_routes = Blueprint('user_routes', __name__)
@@ -33,3 +33,12 @@ def update_this_user(user_id):
 @jwt_required()
 def delete_this_user(user_id):
     return delete_user(user_id)
+
+
+@user_routes.route('/discord_login', methods=['GET'])
+def discord_login_route():
+    return discord_login()
+
+@user_routes.route('/discord_callback', methods=['GET'])
+def discord_callback_route():
+    return discord_callback()
