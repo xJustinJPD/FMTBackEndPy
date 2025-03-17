@@ -128,10 +128,10 @@ def delete_user(user_id: int):
     
 
 
-DISCORD_CLIENT_ID = os.getenv('DISCORD_CLIENT_ID')
-DISCORD_REDIRECT_URI = os.getenv('DISCORD_REDIRECT_URI')
-DISCORD_CLIENT_SECRET = os.getenv('DISCORD_CLIENT_SECRET')
-DISCORD_API_BASE_URL = os.getenv('DISCORD_API_BASE_URL')
+DISCORD_CLIENT_ID = '1349024595683967007'
+DISCORD_REDIRECT_URI = 'http://localhost:5000/discord_callback'
+DISCORD_CLIENT_SECRET = 'HpJuvqB-gHgUAUT_KcLg1tkRrJN9MY-D'
+DISCORD_API_BASE_URL = 'https://discord.com/api/'
 
 
 def discord_login():
@@ -159,6 +159,7 @@ def discord_callback():
 
     response = requests.post(f"{DISCORD_API_BASE_URL}/oauth2/token", data=data, headers=headers)
 
+    #This is wrong, status code does not exist in response, change this tmr
     if response.status_code != 200:
         return jsonify(message='Authorization failed when retrieving token response', status=400), 400
     

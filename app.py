@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_cors import CORS
 from config import Config
+import os
 
 
 app = Flask(__name__)
@@ -36,6 +37,10 @@ app.register_blueprint(stats_routes)
 # app.register_blueprint(profile_routes)
 # app.register_blueprint(group_routes)
 
+DISCORD_CLIENT_ID = '1349024595683967007'
+DISCORD_REDIRECT_URI = 'http://localhost:5000/auth/discord/'
+DISCORD_CLIENT_SECRET = 'HpJuvqB-gHgUAUT_KcLg1tkRrJN9MY-D'
+DISCORD_API_BASE_URL = 'https://discord.com/api'
 
 @app.cli.command('db_create')
 def db_create():
@@ -73,7 +78,12 @@ def db_drop():
 #         db.session.commit()
 #         print('Database seeded!')
 
-
+@app.cli.command('discinfo')
+def printdiscinfo():
+    print(DISCORD_CLIENT_ID)
+    print(DISCORD_REDIRECT_URI)
+    print(DISCORD_CLIENT_SECRET)
+    print(DISCORD_API_BASE_URL)
 
 if __name__ == '__main__':
     app.run()
