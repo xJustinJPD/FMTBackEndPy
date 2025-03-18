@@ -42,6 +42,10 @@ DISCORD_REDIRECT_URI = 'http://localhost:5000/auth/discord/'
 DISCORD_CLIENT_SECRET = 'HpJuvqB-gHgUAUT_KcLg1tkRrJN9MY-D'
 DISCORD_API_BASE_URL = 'https://discord.com/api'
 
+app.secret_key = "jpdsecret"
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem" 
+
 @app.cli.command('db_create')
 def db_create():
     db.create_all()

@@ -14,3 +14,4 @@ class Config:
     DISCORD_CLIENT_SECRET = 'HpJuvqB-gHgUAUT_KcLg1tkRrJN9MY-D'
     DISCORD_REDIRECT_URI = 'http://localhost:5000/auth/discord/'
     DISCORD_API_BASE_URL = 'https://discord.com/api'
+    

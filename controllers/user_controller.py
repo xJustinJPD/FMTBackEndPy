@@ -44,6 +44,7 @@ def login():
     user = User.query.filter_by(email=email, password=password).first()
     if user:
         access_token = create_access_token(identity=str(email))
+        session['id'] = user.id
         return jsonify(message='Login succeeded!', access_token=access_token)
     else:
         return jsonify(message='Bad email or password', status=401), 401
@@ -160,8 +161,8 @@ def discord_callback():
     response = requests.post(f"{DISCORD_API_BASE_URL}/oauth2/token", data=data, headers=headers)
 
     #This is wrong, status code does not exist in response, change this tmr
-    if response.status_code != 200:
-        return jsonify(message='Authorization failed when retrieving token response', status=400), 400
+    # if response.status_code != 200:
+    #     return jsonify(message='Authorization failed when retrieving token response', status=400), 400
     
     response_data = response.json()
     access_token = response_data.get('access_token')
@@ -172,18 +173,18 @@ def discord_callback():
     }
     user_response = f'{DISCORD_API_BASE_URL}/users/@me'
 
-    if user_response.status_code != 200:
-        return jsonify(message='Authorization failed when retrieving user response', status=400), 400
+    # if user_response.status_code != 200:
+    #     return jsonify(message='Authorization failed when retrieving user response', status=400), 400
     
 
     user_response = requests.get(user_response, headers=headers)
     user_data = user_response.json()
     discord_id = user_data.get('id')
 
-    user = User.query.filter_by(email=session.get("email")).first()
+    user = User.query.filter_by(id=session.get("id")).first()
     
     if not user:
-        return jsonify(message='User not found', status=404), 404
+        return jsonify(message='No user found', status=404), 404
 
 
     user.discord_id = discord_id
