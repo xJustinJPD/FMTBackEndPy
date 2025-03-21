@@ -9,4 +9,5 @@ from .User import User
 from .Group import Group
 from .User_Group import user_group
 from .Stats import Stats
+from .Match import Match
 

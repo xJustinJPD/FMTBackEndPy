@@ -14,4 +14,11 @@ class Match(db.Model):
 
     def to_dict(self):
         return {
+            'id': self.id,
+            'liker_id': self.liker_id,
+            'liked_id': self.liked_id,
+            'status': self.status,
+            'timestamp': self.timestamp,
+            'liker': self.liker.to_dict(),
+            'liked': self.liked.to_dict()
         }
