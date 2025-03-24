@@ -19,13 +19,14 @@ def send_like(liked_id):
     db.session.add(match)
     db.session.commit()
 
-    return jsonify({'message': 'Like sent'}), 201
+    return jsonify({'message': f'Like sent by: {user.id}'}), 201
 
 
 def get_likes():
     user = User.query.filter_by(id=session.get("id")).first()
     matches = Match.query.filter_by(liker_id=user.id, status="pending").all()
-    return jsonify(matches.to_dict()), 200
+    result = [match.to_dict() for match in matches]
+    return jsonify(result), 200
 
 
 def respond_to_like(match_id):

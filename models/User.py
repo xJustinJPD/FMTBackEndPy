@@ -25,7 +25,7 @@ class User(db.Model):
             'password': self.password,
             'bio': self.bio,
             'role': self.role,
-            'discord_id': self.discord_id,
+            # 'discord_id': self.discord_id,
             # 'groups': [group.to_dict() for group in self.groups],
-            'stats': self.stats.to_dict()
+            # 'stats': self.stats.to_dict()
         }
