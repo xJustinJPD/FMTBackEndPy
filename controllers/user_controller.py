@@ -11,9 +11,12 @@ from app import db
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
+api_key = 'RGAPI-62f5df00-35b1-411e-97de-141d4b81e669'
+
+
 def register():
-    email = request.form['email']
-    username = request.form['username']
+    email = request.json['email']
+    username = request.json['username']
     test_username = User.query.filter_by(username=username).first()
     if test_username:
         return jsonify(message='That username already exists', status=409), 409
@@ -22,15 +25,98 @@ def register():
     if test_email:
         return jsonify(message='That email already exists', status=409), 409
     else:
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        password = request.form['password']
-        role = request.form['role']
-        bio = request.form['bio']
-        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password, role=role, bio=bio)
+        first_name = request.json['first_name']
+        last_name = request.json['last_name']
+        password = request.json['password']
+        role = request.json['role'].capitalize()
+        bio = request.json['bio']
+        riot_name = request.json['riot_name']
+        riot_tag = request.json['riot_tag']
+        riot_region = request.json['riot_region'].lower()
+        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password, role=role, bio=bio, riot_name=riot_name, riot_tag=riot_tag, riot_region=riot_region, riot_puuid=None, discord_id=None)
         db.session.add(user)
         db.session.commit()
-        return jsonify(message='User created successfully', status=201), 201
+
+    riot_url = f'https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{riot_name}/{riot_tag}?api_key={api_key}'
+    response = requests.get(riot_url)
+
+    if response.status_code == 200:
+        riot_data = response.json()
+        user.riot_puuid = riot_data.get('puuid')
+        db.session.commit()
+    else:
+        return jsonify(message='User created but Riot account linking failed', status=response.status_code), 202
+    
+
+    url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{riot_data.get('puuid')}/ids?start=0&count=20'
+    rank_url = f'https://na1.api.riotgames.com/lol/league/v4/entries/by-puuid/{riot_data.get('puuid')}'
+
+    rank_response = requests.get(rank_url, headers={'X-Riot-Token': api_key})
+    response = requests.get(url, headers={'X-Riot-Token': api_key})
+
+    if response.status_code != 200:
+        return jsonify({'message': 'Error fetching matches'}), 500
+    
+    matches = response.json()
+    rank_response = rank_response.json()
+
+    kills = 0
+    deaths = 0
+    assists = 0
+    wins = 0
+    losses = 0
+    rank = 0
+    winloss = 0.0
+    kda = 0.0
+    kapm = 0.0
+    winpercent = 0
+
+    user.rank = rank_response[0]['tier'] + ' ' + rank_response[0]['rank'] if rank_response else 'Unranked'
+
+    for match_id in matches:
+        url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+
+        response = requests.get(url, headers={'X-Riot-Token': api_key})
+
+        if response.status_code != 200:
+            return jsonify({'message': 'Error fetching match'}), 500
+        
+        match = response.json()
+
+        part_index = match['metadata']['participants'].index(riot_data.get('puuid'))
+        stats_list = match['info']['participants'][part_index]
+
+        kills += stats_list['kills']
+        deaths += stats_list['deaths']
+        assists += stats_list['assists']
+        wins += 1 if stats_list['win'] else 0
+        losses += 0 if stats_list['win'] else 1
+        rank = stats_list['summonerLevel']
+
+    winloss = wins / losses
+    kda = (kills + assists) / deaths
+    kapm = (kills + assists) / (wins + losses)
+    winpercent = int(wins / (wins + losses) * 100)
+
+    if user.stats:
+        user.stats.kills = kills
+        user.stats.deaths = deaths
+        user.stats.assists = assists
+        user.stats.wins = wins
+        user.stats.losses = losses
+        user.stats.rank = rank
+        user.stats.winloss = winloss
+        user.stats.kda = kda
+        user.stats.kapm = kapm
+        user.stats.winpercent = winpercent
+
+    else:
+        stats = Stats(kills=kills, deaths=deaths, assists=assists, wins=wins, losses=losses, rank=rank, winloss=winloss, kda=kda, kapm=kapm, winpercent=winpercent  ,user=user)
+        db.session.add(stats)
+
+    db.session.commit()
+
+    return jsonify(message='User and Riot account linked successfully', status=201), 201
 
 
 def login():
@@ -191,3 +277,6 @@ def discord_callback():
     db.session.commit()
 
     return jsonify(message='Login succeeded!', access_token=access_token)
+
+
+

@@ -12,6 +12,11 @@ class User(db.Model):
     bio = Column(String)
     role = Column(String)
     discord_id = Column(String ,unique=True ,nullable=True)
+    riot_name = Column(String ,nullable=True)
+    riot_tag = Column(String ,nullable=True)
+    riot_puuid = Column(String ,nullable=True)
+    riot_region = Column(String ,nullable=True)
+    rank = Column(String ,nullable=True)
     groups = db.relationship('Group', secondary='user_group' ,back_populates='users')
     stats = db.relationship('Stats', back_populates='user', uselist=False)
 
@@ -25,7 +30,9 @@ class User(db.Model):
             'password': self.password,
             'bio': self.bio,
             'role': self.role,
+            'riot_puuid': self.riot_puuid,
+            'rank': self.rank,
             # 'discord_id': self.discord_id,
             # 'groups': [group.to_dict() for group in self.groups],
-            # 'stats': self.stats.to_dict()
+            'stats': self.stats.to_dict()
         }

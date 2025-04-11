@@ -60,31 +60,6 @@ def db_drop():
     db.drop_all()
     print('Database dropped!')
 
-# @app.cli.command('db_seed')
-# def db_seed():
-#         test_user = User(first_name='Justin',
-#                         last_name='Perry-Doyle',
-#                         email = 'justin@email.com',
-#                         password = 'password')
-        
-#         test_group = Group(group_name='Test Group')
-
-
-#         test_profile = Profile(profile_fname='Justin',
-#                         profile_lname='Perry-Doyle',
-#                         role = 'Controller',
-#                         bio = 'Hi I am Justin, I am a controller')
-#         test_profile2 = Profile(profile_fname='Kacper',
-#                         profile_lname='Agatowski',
-#                         role = 'Duelist',
-#                         bio = 'Hi I am Kacper, I am a duelist')
-#         db.session.add(test_profile2)
-#         db.session.add(test_profile)
-#         db.session.add(test_user)
-#         db.session.add(test_group)
-#         db.session.commit()
-#         print('Database seeded!')
-
 @app.cli.command('discinfo')
 def printdiscinfo():
     print(DISCORD_CLIENT_ID)

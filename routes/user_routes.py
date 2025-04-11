@@ -20,7 +20,7 @@ def add_user_to_group_route():
 def get_this_user(user_id):
     return get_user(user_id)
 
-@user_routes.route('/users', methods=['GET'])
+@user_routes.route('/users', methods=['POST'])
 def get_this_users():
     return get_users()
 
