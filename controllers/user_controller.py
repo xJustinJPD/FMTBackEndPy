@@ -11,7 +11,7 @@ from app import db
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-api_key = 'RGAPI-62f5df00-35b1-411e-97de-141d4b81e669'
+api_key = 'RGAPI-6c46d5cd-f8f5-43c1-be1e-974a202016b7'
 
 
 def register():
@@ -129,7 +129,7 @@ def login():
 
     user = User.query.filter_by(email=email, password=password).first()
     if user:
-        access_token = create_access_token(identity=str(email))
+        access_token = create_access_token(identity=str(user.id))
         session['id'] = user.id
         return jsonify(message='Login succeeded!', access_token=access_token)
     else:

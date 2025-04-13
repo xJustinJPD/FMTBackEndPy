@@ -9,8 +9,7 @@ from app import db, app
 match_schema = MatchSchema()
 match_schema = MatchSchema(many=True)
 
-def send_like(liked_id):
-    user = User.query.filter_by(id=session.get("id")).first()
+def send_like(liked_id, user):
     existmatch = Match.query.filter_by(liker_id=user.id, liked_id=liked_id).first()
     if existmatch:
         return jsonify({'message': 'You liked this user already'}), 400
@@ -22,8 +21,7 @@ def send_like(liked_id):
     return jsonify({'message': f'Like sent by: {user.id}'}), 201
 
 
-def get_likes():
-    user = User.query.filter_by(id=session.get("id")).first()
+def get_likes(user):
     matches = Match.query.filter_by(liker_id=user.id, status="pending").all()
     result = [match.to_dict() for match in matches]
     return jsonify(result), 200
