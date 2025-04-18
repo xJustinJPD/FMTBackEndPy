@@ -1,42 +1,34 @@
-# from flask import request, jsonify, flash, redirect, url_for
-# from flask_jwt_extended import JWTManager, jwt_required, create_access_token
-# from models.Group import Group
-# from models.User import User
-# from schemas.group_schema import GroupSchema
-# from schemas.user_schema import UserSchema
-# from app import db
+from flask import request, jsonify, flash, redirect, url_for
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from models.Group import Group
+from models.User import User
+from schemas.group_schema import GroupSchema
+from schemas.user_schema import UserSchema
+from app import db
 
-# group_schema = GroupSchema()
-# groups_schema = GroupSchema(many=True)
-# user_schema = UserSchema()
-# users_schema = UserSchema(many=True)
+group_schema = GroupSchema()
+groups_schema = GroupSchema(many=True)
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
 
-# def get_groups():
-#     groups_list = Group.query.all()
-#     result = groups_schema.dump(groups_list)
-#     return jsonify(result)
+def get_groups(user):
+    groups = [group.to_dict() for group in user.groups]
+    if not groups:
+        return jsonify({'message': 'No groups found'}), 404 
+    return jsonify(groups), 200
 
+def create_group(user):
+    data = request.get_json()
+    group_name = data.get('group_name')
 
-# def add_user_to_group():
-#     if request.method == 'POST':
-#         user_id = request.form.get('user_id')  # Get selected user id
-#         group_id = request.form.get('group_id')  # Get selected group id
+    if not group_name:
+        return jsonify({'message': 'Group name is required'}), 400
 
-#         # Find the user and group from the database
-#         user = User.query.get(user_id)
-#         group = Group.query.get(group_id)
+    # Create group and add creator
+    group = Group(group_name=group_name)
+    group.users.append(user)
 
-#         if user and group:
-#             # Add user to group if not already added
-#             if group not in user.groups:
-#                 user.groups.append(group)
-#                 db.session.commit()
-#                 flash(f'{user_id} has been added to {group.name}!', 'success')
-#             else:
-#                 flash(f'{user_id} is already in {group.name}.', 'warning')
+    db.session.add(group)
+    db.session.commit()
 
-#         else:
-#             flash('User or Group not found.', 'error')
-
-#         return redirect(url_for('add_user_to_group'))
-
+    return jsonify({'message': 'Group created!', 'group': group.to_dict()}), 201

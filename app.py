@@ -29,7 +29,7 @@ from models.Match import Match
 # Importing models, routes, and controllers after initialization
 from routes.user_routes import user_routes
 # from routes.profile_routes import profile_routes
-# from routes.group_routes import group_routes
+from routes.group_routes import group_routes
 from routes.stats_routes import stats_routes
 from routes.match_routes import match_routes
 
@@ -37,8 +37,8 @@ from routes.match_routes import match_routes
 app.register_blueprint(user_routes)
 app.register_blueprint(stats_routes)
 app.register_blueprint(match_routes)
+app.register_blueprint(group_routes)
 # app.register_blueprint(profile_routes)
-# app.register_blueprint(group_routes)
 
 DISCORD_CLIENT_ID = '1349024595683967007'
 DISCORD_REDIRECT_URI = 'http://localhost:5000/auth/discord/'

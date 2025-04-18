@@ -11,5 +11,5 @@ class Group(db.Model):
         return {
             'id': self.id,
             'group_name': self.group_name,
-            'users': [user.id for user in self.users]
+            'users': [user.to_dict_no_groups() for user in self.users]
         }

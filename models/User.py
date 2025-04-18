@@ -33,6 +33,23 @@ class User(db.Model):
             'riot_puuid': self.riot_puuid,
             'rank': self.rank,
             # 'discord_id': self.discord_id,
-            # 'groups': [group.to_dict() for group in self.groups],
+            'groups': [group.to_dict() for group in self.groups],
             'stats': self.stats.to_dict()
+        }
+    
+    def to_dict_no_groups(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'password': self.password,
+            'bio': self.bio,
+            'role': self.role,
+            'discord_id': self.discord_id,
+            'riot_name': self.riot_name,
+            'riot_tag': self.riot_tag,
+            'riot_puuid': self.riot_puuid,
+            'rank': self.rank
         }
