@@ -12,7 +12,7 @@ user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 def get_groups(user):
-    groups = [group.to_dict() for group in user.groups]
+    groups = [group.to_dict() for group in user.groups if not group.hidden]
     if not groups:
         return jsonify({'message': 'No groups found'}), 404 
     return jsonify(groups), 200
@@ -32,3 +32,22 @@ def create_group(user):
     db.session.commit()
 
     return jsonify({'message': 'Group created!', 'group': group.to_dict()}), 201
+
+
+def get_group_by_id(group_id):
+    group = Group.query.get(group_id)
+    if not group:
+        return jsonify({'message': 'Group not found'}), 404
+
+    return jsonify(group.to_dict()), 200
+
+
+def hide_group(group_id):
+    group = Group.query.get(group_id)
+    if not group:
+        return jsonify({'message': 'Group not found'}), 404
+
+    group.hidden = True
+    db.session.commit()
+
+    return jsonify({'message': 'Group hidden successfully!'}), 200
