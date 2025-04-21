@@ -11,7 +11,7 @@ from app import db
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-api_key = 'RGAPI-e218bc7b-54dc-4faf-b791-bb5df821d14c'
+api_key = 'RGAPI-4d312a9d-eaad-4e5c-95bf-5a8620e2130f'
 
 
 def register():
@@ -226,7 +226,7 @@ def discord_login():
     return redirect(discord_auth_url)
 
 
-def discord_callback():
+def discord_callback(user):
     code = request.args.get('code')
     if not code:
         return jsonify(message='Authorization failed', status=400), 400
@@ -267,16 +267,13 @@ def discord_callback():
     user_data = user_response.json()
     discord_id = user_data.get('id')
 
-    user = User.query.filter_by(id=session.get("id")).first()
-    
-    if not user:
-        return jsonify(message='No user found', status=404), 404
-
 
     user.discord_id = discord_id
     db.session.commit()
 
-    return jsonify(message='Login succeeded!', access_token=access_token)
+    return redirect(f"http://localhost:5173/")
+
+
 
 
 

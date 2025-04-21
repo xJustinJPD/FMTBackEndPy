@@ -1,6 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify, session
 from controllers.user_controller import register, login, add_user_to_group, get_user, get_users, update_user, delete_user, discord_login, discord_callback
-from flask_jwt_extended import jwt_required
+from models.User import User  # Import the User model
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import decode_token 
 
 user_routes = Blueprint('user_routes', __name__)
 
@@ -37,8 +39,26 @@ def delete_this_user(user_id):
 
 @user_routes.route('/discord_login', methods=['GET'])
 def discord_login_route():
+    token = request.args.get('token')
+    if not token:
+        return jsonify({'message': 'Missing token'}), 401
+    session['token'] = token
     return discord_login()
 
 @user_routes.route('/discord_callback', methods=['GET'])
 def discord_callback_route():
-    return discord_callback()
+    token = session.get('token')
+    if not token:
+        return jsonify({'message': 'Missing token'}), 401
+
+    try:
+        decoded = decode_token(token)
+        user_id = decoded['sub']
+        user = User.query.get(user_id)
+    except Exception:
+        return jsonify({'message': 'Invalid token'}), 401
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    return discord_callback(user)

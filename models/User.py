@@ -11,7 +11,7 @@ class User(db.Model):
     password = Column(String)
     bio = Column(String)
     role = Column(String)
-    discord_id = Column(String ,unique=True ,nullable=True)
+    discord_id = Column(String ,nullable=True)
     riot_name = Column(String ,nullable=True)
     riot_tag = Column(String ,nullable=True)
     riot_puuid = Column(String ,nullable=True)
