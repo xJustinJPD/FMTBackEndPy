@@ -155,13 +155,8 @@ def add_user_to_group():
     return jsonify({'message': 'User added to group successfully'}), 200
 
 
-def get_user(user_id: int):
-    user = User.query.filter_by(id=user_id).first()
-    if user:
-        return jsonify(user.to_dict())
-    else:
-        return jsonify(message='That user does not exist', status=404), 404
-    
+def get_user(user):
+    return jsonify(user.to_dict())
 
 def get_users():
     data = request.get_json()

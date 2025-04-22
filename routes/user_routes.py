@@ -18,9 +18,16 @@ def login_route():
 def add_user_to_group_route():
     return add_user_to_group()
 
-@user_routes.route('/user/<int:user_id>', methods=['GET'])
-def get_this_user(user_id):
-    return get_user(user_id)
+@user_routes.route('/profile', methods=['GET'])
+@jwt_required()
+def get_this_user():
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({'message': 'User not found'}), 404
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return get_user(user)
 
 @user_routes.route('/users', methods=['POST'])
 def get_this_users():
