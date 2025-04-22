@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from controllers.group_controller import create_group, get_groups, get_group_by_id, hide_group
+from controllers.group_controller import create_group, get_groups, get_group_by_id, hide_group, check_new_groups
 from models.User import User 
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -38,7 +38,7 @@ def get_group_by_id_route(group_id):
     user = User.query.filter_by(id=user_id).first()
     if not user:
         return jsonify({'message': 'User not found'}), 404
-    return get_group_by_id(group_id)
+    return get_group_by_id(group_id, user)
 
 
 @group_routes.route('/groups/<int:group_id>/delete', methods=['PUT'])
@@ -51,3 +51,15 @@ def hide_group_route(group_id):
     if not user:
         return jsonify({'message': 'User not found'}), 404
     return hide_group(group_id)
+
+
+@group_routes.route('/notifications/groups', methods=['GET'])
+@jwt_required()
+def check_new_groups_route():
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({'message': 'User not found'}), 404
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return check_new_groups(user)

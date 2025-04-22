@@ -6,7 +6,8 @@ class Group(db.Model):
     id = Column(Integer, primary_key=True)
     group_name = Column(String)
     hidden = Column(Boolean, default=False)
-    users = db.relationship('User', secondary='user_group', back_populates='groups')
+    user_associations = db.relationship('UserGroup', back_populates='group', lazy='dynamic')
+    users = db.relationship('User', secondary='UserGroup', viewonly=True)
 
     def to_dict(self):
         return {

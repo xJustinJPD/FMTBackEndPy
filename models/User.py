@@ -17,7 +17,8 @@ class User(db.Model):
     riot_puuid = Column(String ,nullable=True)
     riot_region = Column(String ,nullable=True)
     rank = Column(String ,nullable=True)
-    groups = db.relationship('Group', secondary='user_group' ,back_populates='users')
+    group_associations = db.relationship('UserGroup', back_populates='user', lazy='dynamic')
+    groups = db.relationship('Group', secondary='UserGroup', viewonly=True)
     stats = db.relationship('Stats', back_populates='user', uselist=False)
 
     def to_dict(self):

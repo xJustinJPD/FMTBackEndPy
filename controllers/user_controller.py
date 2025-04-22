@@ -11,7 +11,7 @@ from app import db
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-api_key = 'RGAPI-4d312a9d-eaad-4e5c-95bf-5a8620e2130f'
+api_key = 'RGAPI-ab80418a-9d50-444e-a67d-82df810fc73b'
 
 
 def register():

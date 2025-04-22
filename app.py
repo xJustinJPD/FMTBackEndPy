@@ -22,7 +22,7 @@ CORS(app)
 from models.User import User
 # from models.Profile import Profile
 from models.Group import Group
-from models.User_Group import user_group
+from models.UserGroup import UserGroup
 from models.Stats import Stats
 from models.Match import Match
 
