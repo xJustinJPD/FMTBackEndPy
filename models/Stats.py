@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy import Column, Integer, String, Table, ForeignKey, Float
+import json
 
 class Stats(db.Model):
     __tablename__ = 'stats'
@@ -14,6 +15,9 @@ class Stats(db.Model):
     kda = Column(Float)
     kapm = Column(Float)
     winpercent = Column(Integer)
+    last20kills = Column(String)
+    last20deaths = Column(String)
+    last20assists = Column(String)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
     user = db.relationship('User', back_populates='stats')
 
@@ -28,5 +32,8 @@ class Stats(db.Model):
             'winloss': self.winloss,
             'kda': self.kda,
             'kapm': self.kapm,
-            'winpercent': self.winpercent
+            'winpercent': self.winpercent,
+            'last20kills': json.loads(self.last20kills) if self.last20kills else [],
+            'last20deaths': json.loads(self.last20deaths) if self.last20deaths else [],
+            'last20assists': json.loads(self.last20assists) if self.last20assists else [],
         }

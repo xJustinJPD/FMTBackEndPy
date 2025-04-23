@@ -7,6 +7,7 @@ from models.Group import Group
 from models.Stats import Stats
 from schemas.user_schema import UserSchema
 from app import db
+import json
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -70,8 +71,11 @@ def register():
     kda = 0.0
     kapm = 0.0
     winpercent = 0
+    last20kills = []
+    last20deaths = []
+    last20assists = []
 
-    user.rank = rank_response[0]['tier'] + ' ' + rank_response[0]['rank'] if rank_response else 'Unranked'
+    user.rank = rank_response[0]['tier'] if rank_response else 'Unranked'
 
     for match_id in matches:
         url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
@@ -92,6 +96,9 @@ def register():
         wins += 1 if stats_list['win'] else 0
         losses += 0 if stats_list['win'] else 1
         rank = stats_list['summonerLevel']
+        last20kills.append(stats_list['kills'])
+        last20deaths.append(stats_list['deaths'])
+        last20assists.append(stats_list['assists'])
 
     winloss = wins / losses
     kda = (kills + assists) / deaths
@@ -109,9 +116,12 @@ def register():
         user.stats.kda = kda
         user.stats.kapm = kapm
         user.stats.winpercent = winpercent
+        user.stats.last20kills = json.dumps(last20kills)
+        user.stats.last20deaths = json.dumps(last20deaths)
+        user.stats.last20assists = json.dumps(last20assists)
 
     else:
-        stats = Stats(kills=kills, deaths=deaths, assists=assists, wins=wins, losses=losses, rank=rank, winloss=winloss, kda=kda, kapm=kapm, winpercent=winpercent  ,user=user)
+        stats = Stats(kills=kills, deaths=deaths, assists=assists, wins=wins, losses=losses, rank=rank, winloss=winloss, kda=kda, kapm=kapm, winpercent=winpercent, last20kills=json.dumps(last20kills), last20deaths=json.dumps(last20deaths), last20assists=json.dumps(last20assists), user=user)
         db.session.add(stats)
 
     db.session.commit()
