@@ -5,9 +5,11 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from models.User import User
 from models.Group import Group
 from models.Stats import Stats
+from models.Match import Match
 from schemas.user_schema import UserSchema
 from app import db
 import json
+from werkzeug.security import generate_password_hash, check_password_hash
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -29,12 +31,13 @@ def register():
         first_name = request.json['first_name']
         last_name = request.json['last_name']
         password = request.json['password']
+        hashed_password = generate_password_hash(password, method='sha256')
         role = request.json['role'].capitalize()
         bio = request.json['bio']
         riot_name = request.json['riot_name']
         riot_tag = request.json['riot_tag']
         riot_region = request.json['riot_region'].lower()
-        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=password, role=role, bio=bio, riot_name=riot_name, riot_tag=riot_tag, riot_region=riot_region, riot_puuid=None, discord_id=None)
+        user = User(username=username, first_name=first_name, last_name=last_name, email=email, password=hashed_password, role=role, bio=bio, riot_name=riot_name, riot_tag=riot_tag, riot_region=riot_region, riot_puuid=None, discord_id=None)
         db.session.add(user)
         db.session.commit()
 
@@ -138,7 +141,7 @@ def login():
         password = request.form['password']
 
     user = User.query.filter_by(email=email, password=password).first()
-    if user:
+    if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id))
         session['id'] = user.id
         return jsonify(message='Login succeeded!', access_token=access_token)
@@ -168,28 +171,25 @@ def add_user_to_group():
 def get_user(user):
     return jsonify(user.to_dict())
 
-def get_users():
+def get_users(user):
     data = request.get_json()
+
+    liked_users = db.session.query(Match.liked_id).filter(Match.liker_id == user.id)
+    liked_me = db.session.query(Match.liker_id).filter(Match.liked_id == user.id)
 
     query = User.query
 
     # Apply filters dynamically
-    if "min_kills" in data:
-        query = query.filter(User.stats.has(Stats.kills >= data["min_kills"]))
-    if "max_kills" in data:
-        query = query.filter(User.stats.has(Stats.kills <= data["max_kills"]))
-    if "min_deaths" in data:
-        query = query.filter(User.stats.has(Stats.deaths >= data["min_deaths"]))
-    if "max_deaths" in data:
-        query = query.filter(User.stats.has(Stats.deaths <= data["max_deaths"]))
-    if "min_level" in data:
-        query = query.filter(User.stats.has(Stats.level >= data["min_level"]))
-    if "max_level" in data:
-        query = query.filter(User.stats.has(Stats.level <= data["max_level"]))
     if "role" in data:
         query = query.filter(User.role == data["role"])
+    if "rank" in data:
+        query = query.filter(User.rank == data["rank"])
 
-    users_list = query.all()
+    excluded_ids = set([user.id])
+    excluded_ids.update([row[0] for row in liked_users])
+    excluded_ids.update([row[0] for row in liked_me])
+
+    users_list = query.filter(~User.id.in_(excluded_ids)).all()
     result = [user.to_dict() for user in users_list]
     return jsonify(result)
 

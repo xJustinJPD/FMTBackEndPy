@@ -30,8 +30,15 @@ def get_this_user():
     return get_user(user)
 
 @user_routes.route('/users', methods=['POST'])
-def get_this_users():
-    return get_users()
+@jwt_required()
+def get_users_route():
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({'message': 'User not found'}), 404
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return get_users(user)
 
 @user_routes.route('/update_user/<int:user_id>', methods=['PUT'])
 @jwt_required()
