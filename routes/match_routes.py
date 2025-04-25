@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from controllers.match_controller import send_like, get_likes, respond_to_like
+from controllers.match_controller import send_like, get_likes, respond_to_like, get_my_likes, accept_match, decline_match
 from models.User import User 
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -34,3 +34,27 @@ def get_likes_route():
 @jwt_required()
 def respond_to_like_route(match_id):
     return respond_to_like(match_id)
+
+
+@match_routes.route('/liked_me', methods=['GET'])
+@jwt_required()
+def get_my_likes_route():
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({'message': 'User not found'}), 404
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return get_my_likes(user)
+
+
+@match_routes.route('/likes/<int:match_id>/accept', methods=['PUT'])
+@jwt_required()
+def accept_match_route(match_id):
+    return accept_match(match_id)
+
+
+@match_routes.route('/likes/<int:match_id>/decline', methods=['PUT'])
+@jwt_required()
+def reject_match_route(match_id):
+    return decline_match(match_id)

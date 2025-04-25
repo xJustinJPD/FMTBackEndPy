@@ -14,7 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-api_key = 'RGAPI-ab80418a-9d50-444e-a67d-82df810fc73b'
+api_key = 'RGAPI-ce2158d2-ef3e-4115-b53e-4a9011efc223'
 
 
 def register():
@@ -31,7 +31,7 @@ def register():
         first_name = request.json['first_name']
         last_name = request.json['last_name']
         password = request.json['password']
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         role = request.json['role'].capitalize()
         bio = request.json['bio']
         riot_name = request.json['riot_name']
@@ -140,7 +140,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-    user = User.query.filter_by(email=email, password=password).first()
+    user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id))
         session['id'] = user.id

@@ -41,3 +41,31 @@ def respond_to_like(match_id):
     match.status = status
     db.session.commit()
     return jsonify({'message': f'Match {status}'}), 200
+
+
+def get_my_likes(user):
+    matches = Match.query.filter_by(liked_id=user.id, status="pending").all()
+    result = [match.to_dict() for match in matches]
+    return jsonify(result), 200
+
+
+def accept_match(match_id):
+    match = Match.query.filter_by(id=match_id, status="pending").first()
+
+    if not match:
+        return jsonify({'message': 'No like found'}), 404
+    
+    match.status = "accepted"
+    db.session.commit()
+    return jsonify({'message': 'Match accepted'}), 200
+
+
+def decline_match(match_id):
+    match = Match.query.filter_by(id=match_id, status="pending").first()
+
+    if not match:
+        return jsonify({'message': 'No like found'}), 404
+    
+    match.status = "rejected"
+    db.session.commit()
+    return jsonify({'message': 'Match declined'}), 200
