@@ -14,7 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-api_key = 'RGAPI-ce2158d2-ef3e-4115-b53e-4a9011efc223'
+api_key = 'RGAPI-16b6728e-27cf-49db-8589-78a3958cb954'
 
 
 def register():

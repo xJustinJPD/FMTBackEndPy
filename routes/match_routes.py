@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from controllers.match_controller import send_like, get_likes, respond_to_like, get_my_likes, accept_match, decline_match
+from controllers.match_controller import send_like, get_likes, respond_to_like, get_my_likes, accept_match, decline_match, get_friends
 from models.User import User 
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -58,3 +58,15 @@ def accept_match_route(match_id):
 @jwt_required()
 def reject_match_route(match_id):
     return decline_match(match_id)
+
+
+@match_routes.route('/friends', methods=['GET'])
+@jwt_required()
+def get_friends_route():
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({'message': 'User not found'}), 404
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return get_friends(user)

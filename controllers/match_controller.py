@@ -5,6 +5,7 @@ from models.Match import Match
 from models.User import User
 from schemas.match_schema import MatchSchema
 from app import db, app
+from sqlalchemy import or_
 
 match_schema = MatchSchema()
 match_schema = MatchSchema(many=True)
@@ -69,3 +70,18 @@ def decline_match(match_id):
     match.status = "rejected"
     db.session.commit()
     return jsonify({'message': 'Match declined'}), 200
+
+
+def get_friends(user):
+    matches = Match.query.filter(
+        or_(
+            Match.liker_id == user.id,
+            Match.liked_id == user.id
+        ),
+        Match.status == "accepted"
+    ).all()
+    result = []
+    for match in matches:
+        data = match.to_dict()
+        data['current_user'] = user.id
+    return jsonify(result), 200

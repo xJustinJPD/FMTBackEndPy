@@ -9,7 +9,7 @@ from app import db, app
 stats_schema = StatsSchema()
 stats_schema = StatsSchema(many=True)
 
-api_key = 'RGAPI-ce2158d2-ef3e-4115-b53e-4a9011efc223'
+api_key = 'RGAPI-16b6728e-27cf-49db-8589-78a3958cb954'
 this_puuid = 'XVOMn2SnoNAokktURdg1V3FeXtSWJLJkZYFZMOjp9S3gDD6F-ypV_FTDdD0oE1HTB9ziRYcOfiznHw'
 matches = []
 match = {}
