@@ -228,7 +228,7 @@ def delete_user(user_id: int):
 
 
 DISCORD_CLIENT_ID = '1349024595683967007'
-DISCORD_REDIRECT_URI = 'http://localhost:5000/discord_callback'
+DISCORD_REDIRECT_URI = 'https://fmtbackendpy.onrender.com/discord_callback'
 DISCORD_CLIENT_SECRET = 'HpJuvqB-gHgUAUT_KcLg1tkRrJN9MY-D'
 DISCORD_API_BASE_URL = 'https://discord.com/api/'
 
