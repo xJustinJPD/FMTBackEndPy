@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'planets.db')
+    SQLALCHEMY_DATABASE_URI = 'postgresql://findmyteam_user:BaKKK9aZzc10NBDtOgmfvPixoBxctPvx@dpg-d079b72li9vc73f3j350-a.frankfurt-postgres.render.com/findmyteam'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = 'super-secret'
     MAIL_SERVER = 'sandbox.smtp.mailtrap.io'

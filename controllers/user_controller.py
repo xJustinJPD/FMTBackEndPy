@@ -15,7 +15,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-api_key = 'RGAPI-16b6728e-27cf-49db-8589-78a3958cb954'
+api_key = 'RGAPI-6f4f0ac1-76bb-44d2-aa85-620f61b6592f'
 
 
 def register():
@@ -27,7 +27,7 @@ def register():
 
     test_email = User.query.filter_by(email=email).first()
     if test_email:
-        return jsonify(message='That email already exists', status=409), 409
+        return jsonify(message='That email is already in use', status=409), 409
     else:
         first_name = request.json['first_name']
         last_name = request.json['last_name']
@@ -147,7 +147,7 @@ def login():
         session['id'] = user.id
         return jsonify(message='Login succeeded!', access_token=access_token)
     else:
-        return jsonify(message='Bad email or password', status=401), 401
+        return jsonify(message='Invalid email or password', status=401), 401
 
 
 def add_user_to_group():

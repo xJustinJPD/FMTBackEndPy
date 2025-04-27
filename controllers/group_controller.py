@@ -13,7 +13,13 @@ user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 def get_groups(user):
-    groups = [group.to_dict() for group in user.groups if not group.hidden]
+    groups = []
+    for association in user.group_associations:
+        group = association.group
+        if group and not group.hidden:
+            group_data = group.to_dict()
+            group_data['seen'] = association.seen
+            groups.append(group_data)
     if not groups:
         return jsonify({'message': 'No groups found'}), 404 
     return jsonify(groups), 200
