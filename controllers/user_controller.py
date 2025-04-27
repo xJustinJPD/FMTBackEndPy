@@ -283,7 +283,7 @@ def discord_callback(user):
     user.discord_id = discord_id
     db.session.commit()
 
-    return redirect(f"https://fmtbackendpy.onrender.com/")
+    return redirect(f"http://localhost:5173/")
 
 
 

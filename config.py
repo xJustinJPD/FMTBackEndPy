@@ -12,6 +12,6 @@ class Config:
     MAIL_USE_SSL = False
     DISCORD_CLIENT_ID = '1349024595683967007'
     DISCORD_CLIENT_SECRET = 'HpJuvqB-gHgUAUT_KcLg1tkRrJN9MY-D'
-    DISCORD_REDIRECT_URI = 'http://localhost:5000/auth/discord/'
+    DISCORD_REDIRECT_URI = 'https://fmtbackendpy.onrender.com/auth/discord/'
     DISCORD_API_BASE_URL = 'https://discord.com/api'
     
