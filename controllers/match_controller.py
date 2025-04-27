@@ -19,7 +19,7 @@ def send_like(liked_id, user):
     db.session.add(match)
     db.session.commit()
 
-    return jsonify({'message': f'Like sent by: {user.id}'}), 201
+    return jsonify({'message': f"Like sent by: {user.id}"}), 201
 
 
 def get_likes(user):
@@ -41,7 +41,7 @@ def respond_to_like(match_id):
     
     match.status = status
     db.session.commit()
-    return jsonify({'message': f'Match {status}'}), 200
+    return jsonify({'message': f"Match {status}"}), 200
 
 
 def get_my_likes(user):

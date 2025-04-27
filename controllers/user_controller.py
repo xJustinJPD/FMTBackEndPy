@@ -42,7 +42,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-    riot_url = f'https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{riot_name}/{riot_tag}?api_key={api_key}'
+    riot_url = f"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{riot_name}/{riot_tag}?api_key={api_key}"
     response = requests.get(riot_url)
 
     if response.status_code == 200:
@@ -53,8 +53,8 @@ def register():
         return jsonify(message='User created but Riot account linking failed', status=response.status_code), 202
     
 
-    url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{riot_data.get('puuid')}/ids?start=0&count=20'
-    rank_url = f'https://na1.api.riotgames.com/lol/league/v4/entries/by-puuid/{riot_data.get('puuid')}'
+    url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{riot_data.get('puuid')}/ids?start=0&count=20"
+    rank_url = f"https://na1.api.riotgames.com/lol/league/v4/entries/by-puuid/{riot_data.get('puuid')}"
 
     rank_response = requests.get(rank_url, headers={'X-Riot-Token': api_key})
     response = requests.get(url, headers={'X-Riot-Token': api_key})
@@ -82,7 +82,7 @@ def register():
     user.rank = rank_response[0]['tier'] if rank_response else 'Unranked'
 
     for match_id in matches:
-        url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+        url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}"
 
         response = requests.get(url, headers={'X-Riot-Token': api_key})
 
@@ -234,7 +234,7 @@ DISCORD_API_BASE_URL = 'https://discord.com/api/'
 
 
 def discord_login():
-    discord_auth_url = f'https://discord.com/api/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&redirect_uri={DISCORD_REDIRECT_URI}&response_type=code&scope=identify'
+    discord_auth_url = f"https://discord.com/api/oauth2/authorize?client_id={DISCORD_CLIENT_ID}&redirect_uri={DISCORD_REDIRECT_URI}&response_type=code&scope=identify"
     return redirect(discord_auth_url)
 
 
@@ -267,9 +267,9 @@ def discord_callback(user):
     token_type = response_data.get('token_type')
 
     headers = {
-        'Authorization': f'{token_type} {access_token}'
+        'Authorization': f"{token_type} {access_token}"
     }
-    user_response = f'{DISCORD_API_BASE_URL}/users/@me'
+    user_response = f"{DISCORD_API_BASE_URL}/users/@me"
 
     # if user_response.status_code != 200:
     #     return jsonify(message='Authorization failed when retrieving user response', status=400), 400

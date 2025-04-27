@@ -19,7 +19,7 @@ def get_matches():
     if not puuid:
         return jsonify({'message': 'No puuid provided'}), 400
     
-    url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=20'
+    url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count=20"
 
     response = requests.get(url, headers={'X-Riot-Token': api_key})
 
@@ -35,7 +35,7 @@ def get_match():
     if not match_id:
         return jsonify({'message': 'No match_id provided'}), 400
     
-    url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+    url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}"
 
     response = requests.get(url, headers={'X-Riot-Token': api_key})
 
@@ -55,7 +55,7 @@ def get_stats():
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
-    url = f'https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{this_puuid}/ids?start=0&count=20'
+    url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{this_puuid}/ids?start=0&count=20"
 
     response = requests.get(url, headers={'X-Riot-Token': api_key})
 
@@ -76,7 +76,7 @@ def get_stats():
     winpercent = 0
 
     for match_id in matches:
-        url = f'https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}'
+        url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}"
 
         response = requests.get(url, headers={'X-Riot-Token': api_key})
 
