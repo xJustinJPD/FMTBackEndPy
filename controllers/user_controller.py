@@ -6,6 +6,7 @@ from models.User import User
 from models.Group import Group
 from models.Stats import Stats
 from models.Match import Match
+from models.UserGroup import UserGroup
 from schemas.user_schema import UserSchema
 from app import db
 import json
@@ -161,8 +162,14 @@ def add_user_to_group():
     if not user or not group:
         return jsonify({'message': 'User or Group not found'}), 404
 
-    # Add the user to the group
-    user.groups.append(group)
+    # Check if the link already exists (optional but recommended)
+    existing_link = UserGroup.query.filter_by(user_id=user.id, group_id=group.id).first()
+    if existing_link:
+        return jsonify({'message': 'User already in group'}), 400
+
+    # Create a new UserGroup link
+    user_group = UserGroup(user_id=user.id, group_id=group.id)
+    db.session.add(user_group)
     db.session.commit()
 
     return jsonify({'message': 'User added to group successfully'}), 200

@@ -33,6 +33,8 @@ class User(db.Model):
             'role': self.role,
             'riot_puuid': self.riot_puuid,
             'rank': self.rank,
+            'riot_name': self.riot_name,
+            'riot_tag': self.riot_tag,
             'discord_id': self.discord_id,
             'groups': [group.to_dict() for group in self.groups],
             'stats': self.stats.to_dict()

@@ -84,4 +84,5 @@ def get_friends(user):
     for match in matches:
         data = match.to_dict()
         data['current_user'] = user.id
+        result.append(data)
     return jsonify(result), 200
