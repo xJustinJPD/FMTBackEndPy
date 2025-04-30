@@ -62,7 +62,7 @@ def accept_match(match_id):
 
 
 def decline_match(match_id):
-    match = Match.query.filter_by(id=match_id, status="pending").first()
+    match = Match.query.filter_by(id=match_id).first()
 
     if not match:
         return jsonify({'message': 'No like found'}), 404
