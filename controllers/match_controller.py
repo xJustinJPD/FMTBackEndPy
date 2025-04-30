@@ -86,3 +86,32 @@ def get_friends(user):
         data['current_user'] = user.id
         result.append(data)
     return jsonify(result), 200
+
+
+def get_starred(user):
+    matches = Match.query.filter_by(liker_id=user.id, status="starred").all()
+    result = [match.to_dict() for match in matches]
+    return jsonify(result), 200
+
+
+def send_star(liked_id, user):
+    existmatch = Match.query.filter_by(liker_id=user.id, liked_id=liked_id).first()
+    if existmatch:
+        return jsonify({'message': 'You liked this user already'}), 400
+    
+    match = Match(liker_id=user.id, liked_id=liked_id, status="starred")
+    db.session.add(match)
+    db.session.commit()
+
+    return jsonify({'message': f"Star sent by: {user.id}"}), 201
+
+
+def change_match(match_id):
+    match = Match.query.filter_by(id=match_id, status="starred").first()
+
+    if not match:
+        return jsonify({'message': 'No like found'}), 404
+    
+    match.status = "pending"
+    db.session.commit()
+    return jsonify({'message': 'Like Sent'}), 200

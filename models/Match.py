@@ -7,7 +7,7 @@ class Match(db.Model):
     id = Column(Integer, primary_key=True)
     liker_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     liked_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    status = Column(String, default="pending") #Other values are "accepted" and "rejected"
+    status = Column(String, default="pending") #Other values are "accepted", "starred" and "rejected"
     timestamp = Column(DateTime, default=datetime.now)
     liker = db.relationship('User', foreign_keys=[liker_id], backref='likes_sent')
     liked = db.relationship('User', foreign_keys=[liked_id], backref='likes_received')
