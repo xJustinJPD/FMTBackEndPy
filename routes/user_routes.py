@@ -40,10 +40,16 @@ def get_users_route():
         return jsonify({'message': 'User not found'}), 404
     return get_users(user)
 
-@user_routes.route('/update_user/<int:user_id>', methods=['PUT'])
+@user_routes.route('/profile/update', methods=['PUT'])
 @jwt_required()
-def update_this_user(user_id):
-    return update_user(user_id)
+def update_this_user():
+    user_id = get_jwt_identity()
+    if not user_id:
+        return jsonify({'message': 'User not found'}), 404
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return update_user(user)
 
 @user_routes.route('/delete_user/<int:user_id>', methods=['DELETE'])
 @jwt_required()

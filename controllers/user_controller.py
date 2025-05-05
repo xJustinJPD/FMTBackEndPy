@@ -200,21 +200,17 @@ def get_users(user):
     result = [user.to_dict() for user in users_list]
     return jsonify(result)
 
-def update_user(user_id: int):
-    user = User.query.filter_by(id=user_id).first()
-    if user:
-        user.username = request.form['username']
-        user.first_name = request.form['first_name']
-        user.last_name = request.form['last_name']
-        user.bio = request.form['bio']
-        user.role = request.form['role']
-        user.email = request.form['email']
-        user.password = request.form['password']
+def update_user(user):
+        username = request.json['username']
+        test_username = User.query.filter_by(username=username).first()
+        if test_username:
+            return jsonify(message='That username already exists', status=409), 409
+        user.username = request.json['username']
+        user.bio = request.json['bio']
+        user.role = request.json['role']
         db.session.commit()
         return jsonify(message='You updated a profile', status=202), 202
-    else:
-        return jsonify(message='That profile does not exist', status=404), 404
-    
+
 
 def delete_user(user_id: int):
     user = User.query.filter_by(user_id=user_id).first()
@@ -257,10 +253,6 @@ def discord_callback(user):
     }
 
     response = requests.post(f"{DISCORD_API_BASE_URL}/oauth2/token", data=data, headers=headers)
-
-    #This is wrong, status code does not exist in response, change this tmr
-    # if response.status_code != 200:
-    #     return jsonify(message='Authorization failed when retrieving token response', status=400), 400
     
     response_data = response.json()
     access_token = response_data.get('access_token')
