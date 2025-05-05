@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 jwt = JWTManager(app)
 mail = Mail(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # with app.app_context():
 #     db.session.execute('PRAGMA foreign_keys=ON')
