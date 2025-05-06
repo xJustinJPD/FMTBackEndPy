@@ -92,7 +92,7 @@ def register():
         match = response.json()
 
         part_index = match['metadata']['participants'].index(riot_data.get('puuid'))
-        stats_list = match['info']['participants'][part_index]
+        stats_list =match['info']['participants'][part_index]
 
         kills += stats_list['kills']
         deaths += stats_list['deaths']
@@ -275,7 +275,7 @@ def discord_callback(user):
     user.discord_id = discord_id
     db.session.commit()
 
-    return redirect(f"https://fmt-front-end.vercel.app/home")
+    return redirect(f"http://localhost:5173/home")
 
 
 
